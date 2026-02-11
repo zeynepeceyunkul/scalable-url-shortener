@@ -185,7 +185,7 @@ describe("UrlService", () => {
     });
 
     it("should throw ForbiddenException when not owner and not admin", async () => {
-      linkRepo.findOne.mockResolvedValue({ ...mockLink, userId: "other-user" });
+      linkRepo.findOne.mockResolvedValue({ ...mockLink, userId: "owner-123" });
       const otherUser = {
         ...mockUser,
         id: "other-user",
