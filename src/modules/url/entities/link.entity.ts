@@ -6,35 +6,35 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
-} from 'typeorm';
-import { User } from '../../users/entities/user.entity';
-import { LinkClickDaily } from './link-click-daily.entity';
+} from "typeorm";
+import { User } from "../../users/entities/user.entity";
+import { LinkClickDaily } from "./link-click-daily.entity";
 
-@Entity('links')
+@Entity("links")
 export class Link {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column({ name: 'user_id' })
+  @Column({ name: "user_id" })
   userId: string;
 
-  @ManyToOne(() => User, (user) => user.links, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
+  @ManyToOne(() => User, (user) => user.links, { onDelete: "CASCADE" })
+  @JoinColumn({ name: "user_id" })
   user: User;
 
   @Column({ unique: true })
   code: string;
 
-  @Column({ name: 'original_url' })
+  @Column({ name: "original_url" })
   originalUrl: string;
 
-  @Column({ name: 'is_enabled', default: true })
+  @Column({ name: "is_enabled", default: true })
   isEnabled: boolean;
 
-  @Column({ name: 'expires_at', type: 'timestamptz', nullable: true })
+  @Column({ name: "expires_at", type: "timestamptz", nullable: true })
   expiresAt: Date | null;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
   @OneToMany(() => LinkClickDaily, (daily) => daily.link)

@@ -1,4 +1,4 @@
-import { IsOptional, IsBoolean, IsDateString } from 'class-validator';
+import { IsOptional, IsBoolean, IsDateString } from "class-validator";
 
 export class UpdateLinkDto {
   @IsOptional()

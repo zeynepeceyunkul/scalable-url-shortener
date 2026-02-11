@@ -5,18 +5,18 @@ import {
   HttpException,
   HttpStatus,
   Inject,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { Request } from 'express';
-import Redis from 'ioredis';
-import { REDIS_CLIENT } from '../../config/redis.module';
-import { ConfigService } from '@nestjs/config';
+} from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { Request } from "express";
+import Redis from "ioredis";
+import { REDIS_CLIENT } from "../../config/redis.module";
+import { ConfigService } from "@nestjs/config";
 import {
   RATE_LIMIT_KEY,
   RateLimitOptions,
-} from '../decorators/rate-limit.decorator';
-import { CurrentUser } from '../decorators/current-user.decorator';
-import { User } from '../../modules/users/entities/user.entity';
+} from "../decorators/rate-limit.decorator";
+import { CurrentUser } from "../decorators/current-user.decorator";
+import { User } from "../../modules/users/entities/user.entity";
 
 @Injectable()
 export class RateLimitGuard implements CanActivate {
@@ -28,10 +28,9 @@ export class RateLimitGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const options = this.reflector.getAllAndOverride<RateLimitOptions | undefined>(
-      RATE_LIMIT_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+    const options = this.reflector.getAllAndOverride<
+      RateLimitOptions | undefined
+    >(RATE_LIMIT_KEY, [context.getHandler(), context.getClass()]);
     if (!options) return true;
 
     const request = context.switchToHttp().getRequest<Request>();
@@ -39,12 +38,12 @@ export class RateLimitGuard implements CanActivate {
     const minuteBucket = Math.floor(Date.now() / 1000 / windowSeconds);
 
     let key: string;
-    if (options.keyPrefix === 'rl:ip') {
+    if (options.keyPrefix === "rl:ip") {
       const ip = this.getClientIp(request);
       key = `${options.keyPrefix}:${ip}:${minuteBucket}`;
     } else {
       const user = request.user as User | undefined;
-      const id = user?.id ?? request.ip ?? 'anonymous';
+      const id = user?.id ?? request.ip ?? "anonymous";
       key = `${options.keyPrefix}:${id}:${minuteBucket}`;
     }
 
@@ -56,7 +55,10 @@ export class RateLimitGuard implements CanActivate {
 
     if (count > limit) {
       throw new HttpException(
-        { message: 'Too many requests. Please try again later.', statusCode: 429 },
+        {
+          message: "Too many requests. Please try again later.",
+          statusCode: 429,
+        },
         HttpStatus.TOO_MANY_REQUESTS,
       );
     }
@@ -64,10 +66,10 @@ export class RateLimitGuard implements CanActivate {
   }
 
   private getClientIp(request: Request): string {
-    const xff = request.headers['x-forwarded-for'];
-    if (typeof xff === 'string') {
-      return xff.split(',')[0].trim();
+    const xff = request.headers["x-forwarded-for"];
+    if (typeof xff === "string") {
+      return xff.split(",")[0].trim();
     }
-    return request.ip ?? request.socket?.remoteAddress ?? '127.0.0.1';
+    return request.ip ?? request.socket?.remoteAddress ?? "127.0.0.1";
   }
 }

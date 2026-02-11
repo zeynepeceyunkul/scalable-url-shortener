@@ -3,19 +3,18 @@ import {
   NotFoundException,
   ForbiddenException,
   Inject,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { ConfigService } from '@nestjs/config';
-import Redis from 'ioredis';
-import { REDIS_CLIENT } from '../../config/redis.module';
-import { Link } from './entities/link.entity';
-import { User } from '../users/entities/user.entity';
-import { CreateLinkDto } from './dto/create-link.dto';
-import { UpdateLinkDto } from './dto/update-link.dto';
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { ConfigService } from "@nestjs/config";
+import Redis from "ioredis";
+import { REDIS_CLIENT } from "../../config/redis.module";
+import { Link } from "./entities/link.entity";
+import { User } from "../users/entities/user.entity";
+import { CreateLinkDto } from "./dto/create-link.dto";
+import { UpdateLinkDto } from "./dto/update-link.dto";
 
-const BASE62 =
-  '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+const BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const CODE_LENGTH = 8;
 const MAX_COLLISION_ATTEMPTS = 10;
 
@@ -30,7 +29,7 @@ export class UrlService {
   ) {}
 
   private generateCode(): string {
-    let code = '';
+    let code = "";
     for (let i = 0; i < CODE_LENGTH; i++) {
       code += BASE62[Math.floor(Math.random() * BASE62.length)];
     }
@@ -43,7 +42,7 @@ export class UrlService {
       const existing = await this.linkRepo.findOne({ where: { code } });
       if (!existing) return code;
     }
-    throw new Error('Could not generate unique short code');
+    throw new Error("Could not generate unique short code");
   }
 
   async create(userId: string, dto: CreateLinkDto) {
@@ -72,7 +71,7 @@ export class UrlService {
   ): Promise<{ data: Link[]; total: number }> {
     const [data, total] = await this.linkRepo.findAndCount({
       where: { userId },
-      order: { createdAt: 'DESC' },
+      order: { createdAt: "DESC" },
       skip: (page - 1) * limit,
       take: limit,
     });
@@ -81,9 +80,9 @@ export class UrlService {
 
   async findOne(id: string, user: User): Promise<Link> {
     const link = await this.linkRepo.findOne({ where: { id } });
-    if (!link) throw new NotFoundException('Link not found');
-    if (link.userId !== user.id && user.role !== 'admin') {
-      throw new ForbiddenException('Not allowed to access this link');
+    if (!link) throw new NotFoundException("Link not found");
+    if (link.userId !== user.id && user.role !== "admin") {
+      throw new ForbiddenException("Not allowed to access this link");
     }
     return link;
   }
@@ -99,8 +98,11 @@ export class UrlService {
   }
 
   private buildShortUrl(code: string): string {
-    const baseUrl = this.config.get<string>('app.baseUrl', 'http://localhost:3000');
-    return `${baseUrl.replace(/\/$/, '')}/r/${code}`;
+    const baseUrl = this.config.get<string>(
+      "app.baseUrl",
+      "http://localhost:3000",
+    );
+    return `${baseUrl.replace(/\/$/, "")}/r/${code}`;
   }
 
   private cacheKey(code: string): string {
@@ -108,7 +110,7 @@ export class UrlService {
   }
 
   private getRedirectTtl(): number {
-    return this.config.get<number>('app.cache.redirectTtlSeconds', 3600);
+    return this.config.get<number>("app.cache.redirectTtlSeconds", 3600);
   }
 
   async getRedirectTarget(code: string): Promise<string | null> {

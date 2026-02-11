@@ -1,10 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { UsersService } from '../users/users.service';
-import { User } from '../users/entities/user.entity';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
+import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
+import { UsersService } from "../users/users.service";
+import { User } from "../users/entities/user.entity";
+import { RegisterDto } from "./dto/register.dto";
+import { LoginDto } from "./dto/login.dto";
 
 export interface JwtPayload {
   sub: string;
@@ -32,11 +32,11 @@ export class AuthService {
   async login(dto: LoginDto): Promise<AuthResult> {
     const user = await this.usersService.findByEmail(dto.email);
     if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException("Invalid email or password");
     }
     const valid = await this.usersService.validatePassword(user, dto.password);
     if (!valid) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException("Invalid email or password");
     }
     return this.buildResult(user);
   }
@@ -47,7 +47,7 @@ export class AuthService {
 
   private buildResult(user: User): AuthResult {
     const payload: JwtPayload = { sub: user.id, email: user.email };
-    const expiresIn = this.config.get<string>('app.jwt.expiresIn', '15m');
+    const expiresIn = this.config.get<string>("app.jwt.expiresIn", "15m");
     const accessToken = this.jwtService.sign(payload, { expiresIn });
     return {
       accessToken,
