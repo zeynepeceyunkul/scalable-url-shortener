@@ -15,7 +15,6 @@ import {
   RATE_LIMIT_KEY,
   RateLimitOptions,
 } from "../decorators/rate-limit.decorator";
-import { CurrentUser } from "../decorators/current-user.decorator";
 import { User } from "../../modules/users/entities/user.entity";
 
 @Injectable()

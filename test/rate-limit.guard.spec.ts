@@ -3,7 +3,6 @@ import { Reflector } from "@nestjs/core";
 import { ConfigService } from "@nestjs/config";
 import Redis from "ioredis";
 import { RateLimitGuard } from "../src/common/guards/rate-limit.guard";
-import { RATE_LIMIT_KEY } from "../src/common/decorators/rate-limit.decorator";
 
 describe("RateLimitGuard", () => {
   let guard: RateLimitGuard;
